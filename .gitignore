@@ -1,0 +1,17 @@
+# Lab synopsis form and personal OOP tracking log (kept local, not in the repo)
+Synopsis.doc
+docs/OOP_LOG.md
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Editor and OS files
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
