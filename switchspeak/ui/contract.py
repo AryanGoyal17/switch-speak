@@ -31,7 +31,6 @@ def _show(value: object) -> str:
     return str(value)
 
 
-# OOP: abstraction (ABC, abstractmethod) - defines the 16 board methods with no code, so every board must supply them
 class BoardAPI(ABC):
     """The GUI contract: everything the rest of the app may ask a board to do."""
 
@@ -100,14 +99,9 @@ class BoardAPI(ABC):
         """Remove the emergency overlay."""
 
 
-# OOP: class and object - a real board object that stands in for the Tk window in tests and demos
-# OOP: inheritance - extends BoardAPI, so it is accepted anywhere a board is expected
-# OOP: polymorphism - overrides all 16 contract methods, so callers cannot tell it from the Tk Board
 class ConsoleBoard(BoardAPI):
     """A board with no window: prints every call and enforces the same rules as the real one."""
 
-    # OOP: dunder methods - __init__ runs when a ConsoleBoard is created and sets its starting state
-    # OOP: encapsulation (private attributes) - the _ names mark state that only board methods may change
     def __init__(self) -> None:
         """Start with no suggestions, categories or phrases, and nothing highlighted."""
         self._suggestions: list[str] = []
@@ -116,14 +110,11 @@ class ConsoleBoard(BoardAPI):
         self._highlight: tuple[str | int, ...] | None = None
         self._highlight_label: str | None = None
 
-    # OOP: encapsulation (property) - read-only view of the private highlight so tests can check there is only one
     @property
     def current_highlight(self) -> tuple[str | int, ...] | None:
         """Return ('zone', z), ('row', r), ('cell', r, c), ('item', z, i) or None."""
         return self._highlight
 
-    # OOP: staticmethod - the range check needs no board state, so it is a helper that just lives in the class
-    # OOP: encapsulation (validation) - rejects a bad row, column or index before any state changes
     @staticmethod
     def _check_range(value: int, limit: int, what: str) -> None:
         """Raise ValueError unless value is an int with 0 <= value < limit."""

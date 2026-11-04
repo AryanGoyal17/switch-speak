@@ -3,46 +3,38 @@
 import tkinter as tk
 import tkinter.font as tkfont
 
-# ---------------------------------------------------------------------------
-# Colours: a calm dark theme with a cool blue-grey base and warm accents.
-# ---------------------------------------------------------------------------
 
-BACKGROUND = "#0E1318"        # window background
-PANEL = "#171E26"             # panels and the message bar
-CELL = "#232D3A"              # a normal item (letter, word, phrase, action)
-EMPTY_CELL = "#141A21"        # an empty suggestion slot (kept in place, dimmed)
-CELL_TEXT = "#F4F6F8"         # text on cells, panels and coloured fills
-DIM_TEXT = "#98A5B3"          # empty slots, hints, secondary text
+BACKGROUND = "#0E1318"
+PANEL = "#171E26"
+CELL = "#232D3A"
+EMPTY_CELL = "#141A21"
+CELL_TEXT = "#F4F6F8"
+DIM_TEXT = "#98A5B3"
 
-SOFT_HIGHLIGHT = "#34546F"    # tinted background: brighter than CELL, text stays readable
-SOFT_BORDER = "#7BB0DA"       # ring colour of a softly highlighted item
-STRONG_HIGHLIGHT = "#FFD60A"  # bright accent background of the chosen item
-STRONG_TEXT = "#0E1318"       # dark text on STRONG_HIGHLIGHT and AMBER
-STRONG_BORDER = "#FFFFFF"     # ring colour of the chosen item
+SOFT_HIGHLIGHT = "#34546F"
+SOFT_BORDER = "#7BB0DA"
+STRONG_HIGHLIGHT = "#FFD60A"
+STRONG_TEXT = "#0E1318"
+STRONG_BORDER = "#FFFFFF"
 
-GREEN = "#1F7A45"             # SPEAK and YES
-RED_BROWN = "#8E3A2B"         # NO
-RED = "#C62828"               # EMERGENCY
-TEAL = "#0E7C73"              # active category tab
-AMBER = "#F2A93B"             # paused
+GREEN = "#1F7A45"
+RED_BROWN = "#8E3A2B"
+RED = "#C62828"
+TEAL = "#0E7C73"
+AMBER = "#F2A93B"
 
-# ---------------------------------------------------------------------------
-# Fonts: sizes are points at scale 1.0 (a 768 px high window).
-# ---------------------------------------------------------------------------
 
 FONT_FAMILY = "Segoe UI"
 FONT_FALLBACK = "Helvetica"
 
-# role -> (size at scale 1.0, weight). For the huge emergency countdown use
-# font("heading", scale * 5) so the size still follows the screen.
 FONT_ROLES: dict[str, tuple[int, str]] = {
-    "message": (36, "bold"),    # the typed message
-    "cell": (24, "bold"),       # letters grid cells
-    "tile": (22, "bold"),       # suggestions, YES/NO, actions
-    "phrase": (20, "normal"),   # phrase rows
-    "chip": (16, "normal"),     # switch / mode / speed chips
-    "status": (18, "normal"),   # status line
-    "heading": (20, "bold"),    # category tabs, EMERGENCY, overlay text
+    "message": (36, "bold"),
+    "cell": (24, "bold"),
+    "tile": (22, "bold"),
+    "phrase": (20, "normal"),
+    "chip": (16, "normal"),
+    "status": (18, "normal"),
+    "heading": (20, "bold"),
 }
 
 _resolved_family: str | None = None
@@ -56,7 +48,7 @@ def _family() -> str:
     try:
         installed = set(tkfont.families())
     except (RuntimeError, tk.TclError):
-        return FONT_FAMILY  # no Tk root yet: do not remember this answer
+        return FONT_FAMILY
     _resolved_family = FONT_FAMILY if FONT_FAMILY in installed else FONT_FALLBACK
     return _resolved_family
 
@@ -69,9 +61,6 @@ def font(role: str, scale: float = 1.0) -> tuple[str, int, str]:
     return (_family(), max(1, round(size * scale)), weight)
 
 
-# ---------------------------------------------------------------------------
-# Scale: fonts grow on big screens.
-# ---------------------------------------------------------------------------
 
 REFERENCE_HEIGHT = 768
 SCALE_MIN = 0.8
@@ -89,9 +78,6 @@ def compute_scale(root: tk.Misc) -> float:
     return round(min(SCALE_MAX, max(SCALE_MIN, height / REFERENCE_HEIGHT)), 2)
 
 
-# ---------------------------------------------------------------------------
-# Layout, spacing and borders
-# ---------------------------------------------------------------------------
 
 GRID_ROWS = 5
 GRID_COLS = 6
@@ -105,16 +91,8 @@ PAD_SMALL = 4
 PAD_MEDIUM = 8
 PAD_LARGE = 16
 
-# Every item reserves this ring all the time (invisible when normal) so
-# highlighting never changes an item's size and nothing moves while scanning.
 BORDER_WIDTH = 6
 
-# ---------------------------------------------------------------------------
-# Highlight rules: the ONE place that decides how an item looks.
-#   normal = the item's own colours, ring hidden
-#   soft   = tinted, brighter background + mid-tone ring (a zone or a row)
-#   strong = bright accent background + dark text + thick bright ring (chosen item)
-# ---------------------------------------------------------------------------
 
 LEVEL_NORMAL = "normal"
 LEVEL_SOFT = "soft"
@@ -134,9 +112,6 @@ def highlight_style(
     raise ValueError(f"unknown highlight level {level!r}; expected normal, soft or strong")
 
 
-# ---------------------------------------------------------------------------
-# Contrast pairs for demos/check_contrast.py: (name, text, background, minimum ratio)
-# ---------------------------------------------------------------------------
 
 CONTRAST_PAIRS: tuple[tuple[str, str, str, float], ...] = (
     ("letters: cell text on cell", CELL_TEXT, CELL, 7.0),

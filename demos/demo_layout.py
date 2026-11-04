@@ -4,8 +4,6 @@ import tkinter as tk
 
 from switchspeak.ui import theme
 
-# Root window rows, top to bottom: (region, weight). Every row first gets the height its
-# content needs; weights then share out any extra height. Weight 0 = never grows.
 ROOT_ROWS: tuple[tuple[str, int], ...] = (
     ("top bar", 0),
     ("message bar", 2),
@@ -14,8 +12,8 @@ ROOT_ROWS: tuple[tuple[str, int], ...] = (
     ("actions", 1),
     ("status line", 0),
 )
-MIDDLE_COLUMNS = (3, 2)  # letters : phrases = 60% : 40%
-PHRASE_COLUMNS = 2       # 8 phrases drawn as 4 rows x 2, row-major, so 20 pt text fits
+MIDDLE_COLUMNS = (3, 2)
+PHRASE_COLUMNS = 2
 PHRASES_ROWS: tuple[tuple[str, int], ...] = (
     ("yes / no", 2),
     ("tabs", 1),
@@ -27,7 +25,6 @@ PHRASES_ROWS: tuple[tuple[str, int], ...] = (
 )
 
 
-# OOP: inheritance - a Placeholder is a tk.Frame, so it can be gridded anywhere a frame can
 class Placeholder(tk.Frame):
     """A coloured frame with its region name in a label, reserving the highlight ring like a real item."""
 
@@ -52,19 +49,14 @@ class Placeholder(tk.Frame):
         )
         self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
-        # bd=0 and pady=0: the reserved ring already gives the text its breathing room
         tk.Label(self, text=name, bg=bg, fg=fg, font=theme.font(role, scale), bd=0, pady=0).grid(
             row=0, column=0, sticky=sticky, padx=theme.PAD_MEDIUM
         )
 
 
-# OOP: inheritance - LayoutWindow is a tk.Tk, so it is the root window itself
-# OOP: composition - the window is built from region frames and Placeholder objects it owns
 class LayoutWindow(tk.Tk):
     """The SwitchSpeak root window filled with placeholders, laid out with grid weights only."""
 
-    # OOP: dunder methods - __init__ runs when the window is created and builds every region once
-    # OOP: encapsulation (private attributes) - _fullscreen and _scale are kept inside the window
     def __init__(self) -> None:
         super().__init__()
         self.title("SwitchSpeak")
@@ -73,9 +65,9 @@ class LayoutWindow(tk.Tk):
         self.minsize(width, height)
         self.geometry(f"{width}x{height}")
         self.update_idletasks()
-        self._scale = theme.compute_scale(self)  # fonts follow the starting window height
+        self._scale = theme.compute_scale(self)
         self._fullscreen = False
-        self.bind("<F11>", self._toggle_fullscreen)  # carer key in this demo; ui/ never binds keys
+        self.bind("<F11>", self._toggle_fullscreen)
 
         self.columnconfigure(0, weight=1)
         for row, (_name, weight) in enumerate(ROOT_ROWS):
@@ -96,7 +88,6 @@ class LayoutWindow(tk.Tk):
             region.grid(row=row, column=0, sticky="nsew",
                         padx=theme.PAD_MEDIUM, pady=(theme.PAD_MEDIUM, bottom))
 
-    # OOP: encapsulation (private attributes) - flips the private _fullscreen flag and applies it
     def _toggle_fullscreen(self, _event: "tk.Event[tk.Misc] | None" = None) -> None:
         """Switch between fullscreen and a normal window."""
         self._fullscreen = not self._fullscreen
