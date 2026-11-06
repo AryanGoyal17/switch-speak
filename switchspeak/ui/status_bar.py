@@ -5,25 +5,21 @@ import tkinter as tk
 from switchspeak.ui import theme
 
 APP_NAME = "SwitchSpeak"
-APP_SUBTITLE = "Assistive single-switch interface"
 DOT = "●"
-HINT = "Short press = select | Medium hold = back | Hold 3 s = emergency"
+HINT = "Tap: select   ·   Hold: back   ·   Hold 3 s: emergency"
 
 
 class TopBar(tk.Frame):
-    """Display-only top bar: app name and subtitle on the left, switch, mode and speed chips on the right."""
+    """Display-only top bar: app name on the left, switch, mode and speed chips on the right."""
 
     def __init__(self, parent: tk.Misc, scale: float = 1.0) -> None:
         super().__init__(parent, bg=theme.BACKGROUND)
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
 
-        titles = tk.Frame(self, bg=theme.BACKGROUND)
-        titles.grid(row=0, column=0, sticky="w", padx=theme.PAD_MEDIUM)
-        tk.Label(titles, text=APP_NAME, font=theme.font("heading", scale), bg=theme.BACKGROUND,
-                 fg=theme.CELL_TEXT, bd=0, pady=0, anchor="w").grid(row=0, column=0, sticky="w")
-        tk.Label(titles, text=APP_SUBTITLE, font=theme.font("chip", scale), bg=theme.BACKGROUND,
-                 fg=theme.DIM_TEXT, bd=0, pady=0, anchor="w").grid(row=1, column=0, sticky="w")
+        tk.Label(self, text=APP_NAME, font=theme.font("heading", scale), bg=theme.BACKGROUND,
+                 fg=theme.CELL_TEXT, bd=0, pady=0, anchor="w").grid(row=0, column=0, sticky="w",
+                                                                   padx=theme.PAD_MEDIUM)
 
         self._dot, self._switch_text = self._make_chip(1, scale, with_dot=True)
         _, self._mode_text = self._make_chip(2, scale)

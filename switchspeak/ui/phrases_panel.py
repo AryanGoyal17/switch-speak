@@ -9,9 +9,8 @@ from switchspeak.ui.contract import EMERGENCY_LABEL, PHRASES_HEAD
 from switchspeak.ui.yes_no import YesNoTiles
 
 EMERGENCY_TEXT = "EMERGENCY - CALL HELP"
-EMERGENCY_HINT = "or hold the switch for 3 seconds"
 PHRASE_COLUMNS = 2
-PHRASE_LINES = 2
+PHRASE_LINES = 1
 ELLIPSIS = "…"
 HEAD = len(PHRASES_HEAD)
 ROW_WEIGHTS = (2, 1, 4, 1)
@@ -126,7 +125,7 @@ class PhrasesPanel(tk.Frame):
         for column in range(PHRASE_COLUMNS):
             grid.columnconfigure(column, weight=1, uniform="phrase_cols")
         height = (PHRASE_LINES * self._phrase_font.metrics("linespace")
-                  + 2 * (theme.BORDER_WIDTH + theme.PAD_MEDIUM + theme.PAD_SMALL))
+                  + 2 * (theme.BORDER_WIDTH + 2 * theme.PAD_SMALL))
         grid_rows = -(-theme.MAX_PHRASES // PHRASE_COLUMNS)
         for r in range(grid_rows):
             grid.rowconfigure(r, weight=1, uniform="phrase_rows", minsize=height)
@@ -134,7 +133,7 @@ class PhrasesPanel(tk.Frame):
         self._rows: list[tk.Label] = []
         for i in range(theme.MAX_PHRASES):
             row = tk.Label(grid, font=self._phrase_font, width=1, height=PHRASE_LINES, anchor="w",
-                           justify="left", bd=0, padx=theme.PAD_MEDIUM, pady=theme.PAD_MEDIUM,
+                           justify="left", bd=0, padx=theme.PAD_MEDIUM, pady=theme.PAD_SMALL,
                            highlightthickness=theme.BORDER_WIDTH)
             row.grid(row=i // PHRASE_COLUMNS, column=i % PHRASE_COLUMNS, sticky="nsew",
                      padx=theme.PAD_SMALL, pady=theme.PAD_SMALL)
@@ -142,20 +141,16 @@ class PhrasesPanel(tk.Frame):
             self._rows.append(row)
 
     def _build_emergency(self, scale: float) -> None:
-        """Build the red EMERGENCY tile: a bold title with a small hint under it, inside one ring."""
+        """Build the red EMERGENCY tile: one bold line inside one ring."""
         self._emergency = tk.Frame(self, highlightthickness=theme.BORDER_WIDTH)
         self._emergency.grid(row=3, column=0, sticky="nsew", padx=theme.PAD_SMALL, pady=theme.PAD_SMALL)
         self._emergency.columnconfigure(0, weight=1)
         self._emergency.rowconfigure(0, weight=1)
-        self._emergency.rowconfigure(3, weight=1)
         self._emergency_texts = [
             tk.Label(self._emergency, text=EMERGENCY_TEXT, font=theme.font("heading", scale), width=1,
-                     anchor="center", bd=0, pady=0, padx=theme.PAD_MEDIUM),
-            tk.Label(self._emergency, text=EMERGENCY_HINT, font=theme.font("chip", scale), width=1,
-                     anchor="center", bd=0, pady=0, padx=theme.PAD_MEDIUM),
+                     anchor="center", bd=0, pady=theme.PAD_SMALL, padx=theme.PAD_MEDIUM),
         ]
-        for line, label in enumerate(self._emergency_texts, start=1):
-            label.grid(row=line, column=0, sticky="ew")
+        self._emergency_texts[0].grid(row=0, column=0, sticky="nsew")
 
     def _show_phrase(self, i: int) -> None:
         """Put phrase i into its row, wrapped to 2 lines for the width the row has now."""

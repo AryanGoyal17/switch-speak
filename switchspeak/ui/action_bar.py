@@ -7,13 +7,13 @@ from switchspeak.ui.contract import ACTION_LABELS
 
 DISPLAY_TEXT: dict[str, str] = {
     "SPEAK": "SPEAK",
-    "BACKSPACE": "⌫ BACKSPACE",
-    "CLEAR": "CLEAR ALL",
-    "PAUSE": "PAUSE SCANNING",
+    "BACKSPACE": "⌫  DELETE",
+    "CLEAR": "CLEAR",
+    "PAUSE": "PAUSE",
 }
-RESUME_TEXT = "RESUME SCANNING"
+RESUME_TEXT = "RESUME"
 COLUMN_WEIGHTS = (3, 2, 2, 2)
-TILE_LINES = 2
+TILE_LINES = 1
 PAUSE_INDEX = ACTION_LABELS.index("PAUSE")
 
 
@@ -62,7 +62,7 @@ class ActionBar(tk.Frame):
         self._paint(old)
 
     def set_paused(self, flag: bool) -> None:
-        """Show the last tile as RESUME SCANNING with an amber border when paused, or as PAUSE SCANNING when not."""
+        """Show the last tile as RESUME with an amber border when paused, or as PAUSE when not."""
         self._paused = bool(flag)
         self._tiles[PAUSE_INDEX].configure(text=RESUME_TEXT if self._paused else DISPLAY_TEXT["PAUSE"])
         self._paint(PAUSE_INDEX)

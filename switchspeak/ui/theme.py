@@ -62,20 +62,25 @@ def font(role: str, scale: float = 1.0) -> tuple[str, int, str]:
 
 
 
-REFERENCE_HEIGHT = 768
+REFERENCE_HEIGHT = 880
+REFERENCE_PIXELS_PER_POINT = 96 / 72
 SCALE_MIN = 0.8
 SCALE_MAX = 1.6
 
 
 def compute_scale(root: tk.Misc) -> float:
-    """Return a font scale from SCALE_MIN to SCALE_MAX: 1.0 at a 768 px high window, bigger above.
+    """Return a font scale from SCALE_MIN to SCALE_MAX: 1.0 at an 880 px high window at 96 DPI, bigger above.
 
+    Fonts are in points, so the height is first converted to 96-DPI pixels; the layout then fits the
+    same way whether or not Windows display scaling makes the process DPI-aware.
     Call it once the window has its final size; before it is drawn the screen height is used.
     """
     height = root.winfo_height()
     if height <= 1:
         height = root.winfo_screenheight()
-    return round(min(SCALE_MAX, max(SCALE_MIN, height / REFERENCE_HEIGHT)), 2)
+    pixels_per_point = float(root.tk.call("tk", "scaling"))
+    height_96dpi = height * REFERENCE_PIXELS_PER_POINT / pixels_per_point
+    return round(min(SCALE_MAX, max(SCALE_MIN, height_96dpi / REFERENCE_HEIGHT)), 2)
 
 
 
@@ -85,7 +90,7 @@ MAX_SUGGESTIONS = 4
 MAX_PHRASES = 8
 MAX_CATEGORIES = 4
 EMERGENCY_SECONDS = 5
-MIN_WINDOW = (1100, 700)
+MIN_WINDOW = (1100, 740)
 
 PAD_SMALL = 4
 PAD_MEDIUM = 8

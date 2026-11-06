@@ -6,11 +6,11 @@ from switchspeak.ui import theme
 from switchspeak.ui.contract import PHRASES_HEAD
 
 DISPLAY_TEXT: dict[str, str] = {
-    "YES": "✔\nYES",
-    "NO": "✖\nNO",
+    "YES": "✔  YES",
+    "NO": "✖  NO",
 }
 BASE_COLOURS: dict[str, str] = {"YES": theme.GREEN, "NO": theme.RED_BROWN}
-TILE_LINES = 2
+TILE_LINES = 1
 
 
 class YesNoTiles(tk.Frame):
@@ -25,7 +25,7 @@ class YesNoTiles(tk.Frame):
         for i, name in enumerate(PHRASES_HEAD):
             self.columnconfigure(i, weight=1, uniform="yes_no")
             tile = tk.Label(
-                self, text=DISPLAY_TEXT[name], font=theme.font("message", scale), width=1,
+                self, text=DISPLAY_TEXT[name], font=theme.font("tile", scale), width=1,
                 height=TILE_LINES, anchor="center", justify="center", bd=0,
                 padx=theme.PAD_MEDIUM, pady=theme.PAD_MEDIUM, highlightthickness=theme.BORDER_WIDTH,
             )

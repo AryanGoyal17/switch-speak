@@ -5,13 +5,11 @@ from collections.abc import Sequence
 
 from switchspeak.ui import theme
 
-HEADING = "WORD SUGGESTIONS"
-CAPTION = "Press to complete the word"
 EMPTY_TEXT = "—"
 
 
 class SuggestionRow(tk.Frame):
-    """Display-only row of 4 word slots under a small heading; empty slots stay in place, dimmed."""
+    """Display-only row of 4 word slots; empty slots stay in place, dimmed."""
 
     def __init__(self, parent: tk.Misc, scale: float = 1.0) -> None:
         super().__init__(parent, bg=theme.BACKGROUND)
@@ -19,20 +17,10 @@ class SuggestionRow(tk.Frame):
         self._highlighted: int | None = None
         self._slots: list[tk.Label] = []
 
-        self.rowconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
         self.columnconfigure(0, weight=1)
-        header = tk.Frame(self, bg=theme.BACKGROUND)
-        header.grid(row=0, column=0, sticky="ew", padx=theme.PAD_MEDIUM)
-        header.columnconfigure(1, weight=1)
-        small = theme.font("chip", scale)
-        tk.Label(header, text=HEADING, font=small, bg=theme.BACKGROUND, fg=theme.DIM_TEXT,
-                 bd=0, pady=0).grid(row=0, column=0, sticky="w")
-        self._caption = tk.Label(header, text="", font=small, bg=theme.BACKGROUND, fg=theme.DIM_TEXT,
-                                 bd=0, pady=0)
-        self._caption.grid(row=0, column=1, sticky="e")
-
         slots = tk.Frame(self, bg=theme.BACKGROUND)
-        slots.grid(row=1, column=0, sticky="nsew")
+        slots.grid(row=0, column=0, sticky="nsew")
         slots.rowconfigure(0, weight=1)
         for i in range(theme.MAX_SUGGESTIONS):
             slots.columnconfigure(i, weight=1, uniform="suggestions")
@@ -51,7 +39,6 @@ class SuggestionRow(tk.Frame):
         for i, slot in enumerate(self._slots):
             slot.configure(text=self._words[i].upper() if i < len(self._words) else EMPTY_TEXT)
             self._paint(i)
-        self._caption.configure(text=CAPTION if self._words else "")
 
     def item_count(self) -> int:
         """Return the number of filled slots (0 to 4); empty slots are not items."""

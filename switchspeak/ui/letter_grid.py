@@ -1,11 +1,11 @@
-"""LetterGrid panel: the 5 x 6 letters grid, BACKSPACE drawn as ⌫. Owner: Member 2."""
+"""LetterGrid panel: the 5 x 6 letters grid, BACKSPACE drawn as ⌫, word labels shrunk to fit. Owner: Member 2."""
 
 import tkinter as tk
+import tkinter.font as tkfont
 
 from switchspeak.ui import theme
 
-BACKSPACE = "BACKSPACE"
-BACKSPACE_SYMBOL = "⌫"
+SYMBOLS: dict[str, str] = {"BACKSPACE": "⌫"}
 
 
 class LetterGrid(tk.Frame):
@@ -17,6 +17,11 @@ class LetterGrid(tk.Frame):
         super().__init__(parent, bg=theme.PANEL)
         self._texts = [list(row) for row in grid]
         self._highlighted: list[tuple[int, int]] = []
+        self._word_font = tkfont.Font(root=self, font=theme.font("cell", scale))
+        self._word_top = theme.font("cell", scale)[1]
+        self._word_floor = min(self._word_top, theme.font("chip", scale)[1])
+        self._word_inner = 0
+        self._words = [SYMBOLS.get(t, t) for row in self._texts for t in row if len(SYMBOLS.get(t, t)) > 1]
 
         for r in range(theme.GRID_ROWS):
             self.rowconfigure(r, weight=1, uniform="letter_rows")
@@ -28,14 +33,18 @@ class LetterGrid(tk.Frame):
         for r, row in enumerate(self._texts):
             labels: list[tk.Label] = []
             for c, text in enumerate(row):
+                shown = SYMBOLS.get(text, text)
+                is_word = len(shown) > 1
                 label = tk.Label(
-                    self, text=BACKSPACE_SYMBOL if text == BACKSPACE else text,
-                    font=theme.font("cell", scale), anchor="center", bd=0,
-                    padx=theme.PAD_MEDIUM, pady=theme.PAD_MEDIUM,
+                    self, text=shown, width=1,
+                    font=self._word_font if is_word else theme.font("cell", scale), anchor="center", bd=0,
+                    padx=theme.PAD_SMALL, pady=theme.PAD_SMALL,
                     bg=normal["bg"], fg=normal["fg"], highlightthickness=theme.BORDER_WIDTH,
                     highlightbackground=normal["ring"], highlightcolor=normal["ring"],
                 )
                 label.grid(row=r, column=c, sticky="nsew", padx=theme.PAD_SMALL, pady=theme.PAD_SMALL)
+                if is_word:
+                    label.bind("<Configure>", self._on_word_resize)
                 labels.append(label)
             self._labels.append(labels)
 
@@ -44,7 +53,7 @@ class LetterGrid(tk.Frame):
         return theme.GRID_ROWS * theme.GRID_COLS
 
     def item_labels(self) -> list[str]:
-        """Return the 30 cell labels as given (BACKSPACE, not ⌫), row-major: index = r*6 + c."""
+        """Return the 30 cell labels as given (BACKSPACE and SPACE, not their symbols), row-major: index = r*6 + c."""
         return [text for row in self._texts for text in row]
 
     def highlight_row(self, r: int) -> None:
@@ -67,6 +76,17 @@ class LetterGrid(tk.Frame):
         for r, c in self._highlighted:
             self._paint(r, c, theme.LEVEL_NORMAL)
         self._highlighted.clear()
+
+    def _on_word_resize(self, event: "tk.Event[tk.Label]") -> None:
+        """Shrink the shared word font (e.g. for SPACE) until the longest word fits a cell, never below chip size."""
+        inner = event.width - 2 * (theme.BORDER_WIDTH + theme.PAD_SMALL)
+        if inner == self._word_inner or inner <= 0:
+            return
+        self._word_inner = inner
+        for size in range(self._word_top, self._word_floor - 1, -1):
+            self._word_font.configure(size=size)
+            if max(self._word_font.measure(word) for word in self._words) <= inner:
+                return
 
     def _style(self, r: int, c: int, level: str) -> None:
         """Paint cell (r, c) at a highlight level and remember it for clear()."""
